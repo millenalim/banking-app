@@ -1,14 +1,13 @@
 package learn.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Check;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -17,7 +16,7 @@ public class AppUser implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "app_user_id", nullable = false, updatable = false)
-    private Long userId;
+    private int userId;
     private String username;
     private String password;
     private String firstName;
@@ -26,8 +25,15 @@ public class AppUser implements UserDetails {
     private String email;
     private String phone;
     private boolean enabled = true;
+    @OneToOne
     private CheckingAccount checkingAccount;
+    @OneToOne
     private SavingsAccount savingsAccount;
+    @OneToMany(mappedBy = "app_user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Recipient> recipientList;
+    @OneToMany(mappedBy = "app_user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnore
+    private Set<AppUserRole> userRoles = new HashSet<>();
     private Collection<GrantedAuthority> authorities = new ArrayList<>();
 
     private static Collection<GrantedAuthority> convertRolesToAuthorities(List<String> roles) {
@@ -36,11 +42,22 @@ public class AppUser implements UserDetails {
                 .collect(Collectors.toList());
     }
 
-    public Long getUserId() {
+    public AppUser() {
+    }
+
+    public AppUser(int userId, String email,  String password, boolean enabled, List<String> roles) {
+        this.userId = userId;
+        this.email = email;
+        this.password = password;
+        this.enabled = enabled;
+        this.authorities = convertRolesToAuthorities(roles);
+    }
+
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 
@@ -110,6 +127,22 @@ public class AppUser implements UserDetails {
         this.savingsAccount = savingsAccount;
     }
 
+    public List<Recipient> getRecipientList() {
+        return recipientList;
+    }
+
+    public void setRecipientList(List<Recipient> recipientList) {
+        this.recipientList = recipientList;
+    }
+
+    public Set<AppUserRole> getUserRoles() {
+        return userRoles;
+    }
+
+    public void setUserRoles(Set<AppUserRole> userRoles) {
+        this.userRoles = userRoles;
+    }
+
     @Override
     public Collection<GrantedAuthority> getAuthorities() {
         return authorities;
@@ -141,5 +174,24 @@ public class AppUser implements UserDetails {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    @Override
+    public String toString() {
+        return "AppUser{" +
+                "userId=" + userId +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", enabled=" + enabled +
+                ", checkingAccount=" + checkingAccount +
+                ", savingsAccount=" + savingsAccount +
+                ", recipientList=" + recipientList +
+                ", userRoles=" + userRoles +
+                ", authorities=" + authorities +
+                '}';
     }
 }

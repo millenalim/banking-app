@@ -2,22 +2,21 @@ package learn.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
 public class SavingsAccount {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private BigDecimal accountBalance;
     private int accountNumber;
     private int routingNumber;
 
-    @OneToMany(mappedBy="savings_account", cascade= CascadeType.ALL, fetch= FetchType.LAZY)
+    @OneToMany(mappedBy="savingsAccount", cascade= CascadeType.ALL, fetch= FetchType.LAZY)
     @JsonIgnore
     private List<SavingsTransaction> savingsTransactionsList;
 

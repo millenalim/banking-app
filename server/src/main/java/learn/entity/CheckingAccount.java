@@ -16,7 +16,7 @@ public class CheckingAccount {
     private int accountNumber;
     private int routingNumber;
 
-    @OneToMany(mappedBy="checking_account", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+    @OneToMany(mappedBy="checkingAccount", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
     @JsonIgnore
     private List<CheckingTransaction> checkingTransactionsList;
 
