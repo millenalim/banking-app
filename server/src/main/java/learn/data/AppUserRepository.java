@@ -9,7 +9,11 @@ public interface AppUserRepository extends CrudRepository<AppUser, Integer> {
 
     List<AppUser> findAll();
 
+    List<AppUser> findAllUsers();
+
     AppUser findByUsername(String username);
 
     AppUser findByEmail(String email);
+
+    AppUser createUser(AppUser user);
 }
