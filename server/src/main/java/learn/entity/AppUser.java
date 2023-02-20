@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
+@Table(name="app_user")
 public class AppUser implements UserDetails {
 
     @Id
@@ -24,7 +25,7 @@ public class AppUser implements UserDetails {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
     private String phone;
-    private boolean enabled = true;
+    private boolean enabled;
     @OneToOne
     private CheckingAccount checkingAccount;
     @OneToOne

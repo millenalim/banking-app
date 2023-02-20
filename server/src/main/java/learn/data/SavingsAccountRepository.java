@@ -7,9 +7,4 @@ public interface SavingsAccountRepository extends CrudRepository<SavingsAccount,
 
     SavingsAccount findByAccountNumber(int accountNumber);
 
-    SavingsAccount createSavingsAccount();
-
-    void deposit(String accountType, double amount);
-
-    void withdraw(String accountType, double amount);
 }

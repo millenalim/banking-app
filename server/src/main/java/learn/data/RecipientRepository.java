@@ -16,9 +16,4 @@ public interface RecipientRepository extends CrudRepository<Recipient, Integer> 
 
     void deleteByName(String recipientName);
 
-    List<Recipient> findRecipient(Principal principal);
-
-    void deleteRecipientByName(String recipientName);
-
-    void transferToSomeone(Recipient recipient, String accountType, String amount, CheckingAccount checkingAccount, SavingsAccount savingsAccount);
 }

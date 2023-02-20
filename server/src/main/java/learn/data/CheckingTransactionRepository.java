@@ -9,8 +9,4 @@ import java.util.List;
 
 public interface CheckingTransactionRepository extends CrudRepository<CheckingTransaction, Integer> {
 
-    List<CheckingTransaction> findAll();
-
-    List<CheckingTransaction> findCheckingTransactionList(String username);
-
 }
