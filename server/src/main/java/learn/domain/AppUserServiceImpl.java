@@ -79,6 +79,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
                 user.setCheckingAccount(accountService.createCheckingAccount());
                 user.setSavingsAccount(accountService.createSavingsAccount());
+                user.setEnabled(true);
 
                 currentUser = appUserRepository.save(user);
                 result.setPayload(currentUser);
@@ -90,6 +91,11 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     public AppUser saveUser(AppUser user) {
         return null;
+    }
+
+    public Result<AppUser> checkUserValidation(String username, String email) {
+        Result<AppUser> result = validateFields(username, email);
+        return result;
     }
 
     private Result<AppUser> validate(String username, String password) {
@@ -114,6 +120,25 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
             result.addMessage(ActionStatus.INVALID,
                     "password must be at least 8 characters and contain a digit," +
                             " a letter, and a non-digit/non-letter");
+        }
+
+        return result;
+    }
+
+    private Result<AppUser> validateFields(String username, String email) {
+        Result<AppUser> result = new Result<>();
+
+        // check if user exists
+        if (findByUsername(username) == null || findByEmail(email) == null) {
+            result.addMessage(ActionStatus.INVALID, "User does not exist");
+        }
+
+        if (findByUsername(username) == null) {
+            result.addMessage(ActionStatus.INVALID, "Username is required");
+        }
+
+        if (findByEmail(email) == null) {
+            result.addMessage(ActionStatus.INVALID, "Email is required");
         }
 
         return result;

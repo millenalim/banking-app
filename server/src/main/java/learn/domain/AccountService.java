@@ -7,6 +7,6 @@ public interface AccountService {
 
     CheckingAccount createCheckingAccount();
     SavingsAccount createSavingsAccount();
-    void deposit(String accountType, double amount);
-    void withdraw(String accountType, double amount);
+    void deposit(String username, String accountType, double amount);
+    void withdraw(String username, String accountType, double amount);
 }

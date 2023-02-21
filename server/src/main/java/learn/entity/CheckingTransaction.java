@@ -24,13 +24,13 @@ public class CheckingTransaction {
     public CheckingTransaction() {
     }
 
-    public CheckingTransaction(double amount, BigDecimal availableBalance, Date date, String description, String status, String type, CheckingAccount checkingAccount) {
-        this.amount = amount;
-        this.availableBalance = availableBalance;
+    public CheckingTransaction(Date date, String description, String type, String status, double amount, BigDecimal availableBalance, CheckingAccount checkingAccount) {
         this.date = date;
         this.description = description;
-        this.status = status;
         this.type = type;
+        this.status = status;
+        this.amount = amount;
+        this.availableBalance = availableBalance;
         this.checkingAccount = checkingAccount;
     }
 

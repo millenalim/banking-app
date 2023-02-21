@@ -24,14 +24,13 @@ public class SavingsTransaction {
     public SavingsTransaction() {
     }
 
-    public SavingsTransaction(int id, double amount, BigDecimal availableBalance, Date date, String description, String status, String type, SavingsAccount savingsAccount) {
-        this.id = id;
-        this.amount = amount;
-        this.availableBalance = availableBalance;
+    public SavingsTransaction(Date date, String description, String type, String status, double amount, BigDecimal availableBalance, SavingsAccount savingsAccount) {
         this.date = date;
         this.description = description;
-        this.status = status;
         this.type = type;
+        this.status = status;
+        this.amount = amount;
+        this.availableBalance = availableBalance;
         this.savingsAccount = savingsAccount;
     }
 

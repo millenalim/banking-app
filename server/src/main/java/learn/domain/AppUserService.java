@@ -22,5 +22,5 @@ public interface AppUserService {
 
     AppUser saveUser(AppUser user);
 
-
+    Result<AppUser> checkUserValidation(String username, String email);
 }
