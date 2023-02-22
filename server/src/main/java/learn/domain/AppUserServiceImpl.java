@@ -1,13 +1,13 @@
 package learn.domain;
 
-import learn.App;
 import learn.data.AppRoleRepository;
 import learn.data.AppUserRepository;
+import learn.domain.models.AccountService;
+import learn.domain.models.AppUserService;
 import learn.entity.AppUser;
 import learn.entity.AppUserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

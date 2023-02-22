@@ -1,5 +1,6 @@
-package learn.domain;
+package learn.domain.models;
 
+import learn.domain.Result;
 import learn.entity.AppUser;
 import learn.entity.AppUserRole;
 import org.springframework.stereotype.Service;

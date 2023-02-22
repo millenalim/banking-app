@@ -1,4 +1,4 @@
-package learn.domain;
+package learn.domain.models;
 
 import learn.entity.CheckingAccount;
 import learn.entity.SavingsAccount;

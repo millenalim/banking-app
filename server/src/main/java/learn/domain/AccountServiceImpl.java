@@ -2,6 +2,9 @@ package learn.domain;
 
 import learn.data.CheckingAccountRepository;
 import learn.data.SavingsAccountRepository;
+import learn.domain.models.AccountService;
+import learn.domain.models.AppUserService;
+import learn.domain.models.TransactionService;
 import learn.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
