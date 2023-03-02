@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +21,7 @@ import java.util.Set;
 
 @Service
 @Transactional
-public class AppUserServiceImpl implements AppUserService, UserDetailsService {
+public class AppUserServiceImpl implements AppUserService {
 
     @Autowired
     private AppUserRepository appUserRepository;
@@ -29,7 +30,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     private AppRoleRepository appRoleRepository;
 
     @Autowired
-    private PasswordEncoder encoder;
+    private BCryptPasswordEncoder encoder;
 
     @Lazy
     @Autowired
@@ -47,121 +48,61 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
         return appUserRepository.findByEmail(email);
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AppUser appUser = appUserRepository.findByUsername(username);
-
-        if (appUser == null || !appUser.isEnabled()) {
-            throw new UsernameNotFoundException(username + " not found");
-        }
-
-        return appUser;
+    public void save(AppUser user) {
+        appUserRepository.save(user);
     }
 
-    public Result<AppUser> createAccount(String username, String password, AppUser user, Set<AppUserRole> userRoles) {
-        Result<AppUser> result = validate(username, password);
+    public AppUser createAccount(AppUser user, Set<AppUserRole> userRoles) {
         AppUser currentUser = appUserRepository.findByUsername(user.getUsername());
 
-        if (!result.isSuccess()) {
-            return result;
+        if (currentUser != null) {
+            System.out.printf("%s already exists.", user.getUsername());;
         } else {
-            if (currentUser != null) {
-                result.addMessage(ActionStatus.INVALID, "The provided username already exists");
-            } else {
-                password = encoder.encode(user.getPassword());
-                user.setPassword(password);
+            String password = encoder.encode(user.getPassword());
+            user.setPassword(password);
 
-                for (AppUserRole userRole : userRoles) {
-                    appRoleRepository.save(userRole.getAppRole());
-                }
-
-                user.getUserRoles().addAll(userRoles);
-
-                user.setCheckingAccount(accountService.createCheckingAccount());
-                user.setSavingsAccount(accountService.createSavingsAccount());
-                user.setEnabled(true);
-
-                currentUser = appUserRepository.save(user);
-                result.setPayload(currentUser);
+            for (AppUserRole role : userRoles) {
+                appRoleRepository.save(role.getAppRole());
             }
+
+            user.getUserRoles().addAll(userRoles);
+
+            user.setCheckingAccount(accountService.createCheckingAccount());
+            user.setSavingsAccount(accountService.createSavingsAccount());
+
+            currentUser = appUserRepository.save(user);
         }
 
-        return result;
+        return currentUser;
     }
 
     public AppUser saveUser(AppUser user) {
-        return null;
+        return appUserRepository.save(user);
     }
 
-    public Result<AppUser> checkUserValidation(String username, String email) {
-        Result<AppUser> result = validateFields(username, email);
-        return result;
+    public void enable(String username) {
+        AppUser user = findByUsername(username);
+        user.setEnabled(true);
+        appUserRepository.save(user);
     }
 
-    private Result<AppUser> validate(String username, String password) {
-        Result<AppUser> result = new Result<>();
-
-        if (username == null || username.isBlank()) {
-            result.addMessage(ActionStatus.INVALID, "username is required.");
-            return result;
-        }
-
-        if (password == null) {
-            result.addMessage(ActionStatus.INVALID, "password is required");
-            return result;
-        }
-
-        if (username.length() > 50) {
-            result.addMessage(ActionStatus.INVALID, "username must be less than 50 characters");
-            return result;
-        }
-
-        if (!isValidPassword(password)) {
-            result.addMessage(ActionStatus.INVALID,
-                    "password must be at least 8 characters and contain a digit," +
-                            " a letter, and a non-digit/non-letter");
-        }
-
-        return result;
+    public void disable(String username) {
+        AppUser user = findByUsername(username);
+        user.setEnabled(false);
+        System.out.printf("status: %s", user.isEnabled());
+        appUserRepository.save(user);
+        System.out.printf("%s is disabled", username);
     }
 
-    private Result<AppUser> validateFields(String username, String email) {
-        Result<AppUser> result = new Result<>();
-
-        // check if user exists
-        if (findByUsername(username) == null || findByEmail(email) == null) {
-            result.addMessage(ActionStatus.INVALID, "User does not exist");
-        }
-
-        if (findByUsername(username) == null) {
-            result.addMessage(ActionStatus.INVALID, "Username is required");
-        }
-
-        if (findByEmail(email) == null) {
-            result.addMessage(ActionStatus.INVALID, "Email is required");
-        }
-
-        return result;
+    public boolean validateUsernameExist(String username) {
+        return null != findByUsername(username);
     }
 
-    private boolean isValidPassword(String password) {
-        if (password.length() < 8) {
-            return false;
-        }
+    public boolean validateEmailExist(String email) {
+        return null != findByEmail(email);
+    }
 
-        int digits = 0;
-        int letters = 0;
-        int others = 0;
-        for (char c : password.toCharArray()) {
-            if (Character.isDigit(c)) {
-                digits++;
-            } else if (Character.isLetter(c)) {
-                letters++;
-            } else {
-                others++;
-            }
-        }
-
-        return digits > 0 && letters > 0 && others > 0;
+    public boolean validateUserExist(String username, String email) {
+        return validateUsernameExist(username) || validateEmailExist(email);
     }
 }

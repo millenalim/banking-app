@@ -1,14 +1,12 @@
 package learn.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.Check;
+import learn.security.Authority;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name="app_user")
@@ -35,23 +33,12 @@ public class AppUser implements UserDetails {
     @OneToMany(mappedBy = "app_user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnore
     private Set<AppUserRole> userRoles = new HashSet<>();
-    private Collection<GrantedAuthority> authorities = new ArrayList<>();
 
-    private static Collection<GrantedAuthority> convertRolesToAuthorities(List<String> roles) {
-        return roles.stream()
-                .map(r -> new SimpleGrantedAuthority(r))
-                .collect(Collectors.toList());
-    }
-
-    public AppUser() {
-    }
-
-    public AppUser(int userId, String email,  String password, boolean enabled, List<String> roles) {
-        this.userId = userId;
-        this.email = email;
-        this.password = password;
-        this.enabled = enabled;
-        this.authorities = convertRolesToAuthorities(roles);
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        userRoles.forEach(ur -> authorities.add(new Authority(ur.getAppRole().getName())));
+        return authorities;
     }
 
     public int getUserId() {
@@ -145,15 +132,6 @@ public class AppUser implements UserDetails {
     }
 
     @Override
-    public Collection<GrantedAuthority> getAuthorities() {
-        return authorities;
-    }
-
-    public void setAuthorities(Collection<GrantedAuthority> authorities) {
-        this.authorities = authorities;
-    }
-
-    @Override
     public boolean isAccountNonExpired() {
         return true;
     }
@@ -192,7 +170,6 @@ public class AppUser implements UserDetails {
                 ", savingsAccount=" + savingsAccount +
                 ", recipientList=" + recipientList +
                 ", userRoles=" + userRoles +
-                ", authorities=" + authorities +
                 '}';
     }
 }

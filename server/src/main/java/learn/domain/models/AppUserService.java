@@ -1,6 +1,5 @@
 package learn.domain.models;
 
-import learn.domain.Result;
 import learn.entity.AppUser;
 import learn.entity.AppUserRole;
 import org.springframework.stereotype.Service;
@@ -17,11 +16,19 @@ public interface AppUserService {
 
     AppUser findByEmail(String email);
 
-//    void save(AppUser user);
+    void save(AppUser user);
 
-    Result<AppUser> createAccount(String username, String password, AppUser user, Set<AppUserRole> userRoles);
+    AppUser createAccount(AppUser user, Set<AppUserRole> userRoles);
 
     AppUser saveUser(AppUser user);
 
-    Result<AppUser> checkUserValidation(String username, String email);
+    void enable(String username);
+
+    void disable(String username);
+
+    boolean validateUsernameExist(String username);
+
+    boolean validateEmailExist(String email);
+
+    boolean validateUserExist(String username, String email);
 }

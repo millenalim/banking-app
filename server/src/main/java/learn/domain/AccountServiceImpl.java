@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.util.Date;
 
 @Service
@@ -51,8 +52,8 @@ public class AccountServiceImpl implements AccountService {
         return savingsAccountRepository.findByAccountNumber(savingsAccount.getAccountNumber());
     }
 
-    public void deposit(String username, String accountType, double amount) {
-        AppUser user = appUserService.findByUsername(username);
+    public void deposit(String username, String accountType, double amount, Principal principal) {
+        AppUser user = appUserService.findByUsername(principal.getName());
 
         if (accountType.equalsIgnoreCase("Checking")) {
             CheckingAccount checkingAccount = user.getCheckingAccount();
@@ -75,8 +76,8 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
-    public void withdraw(String username, String accountType, double amount) {
-        AppUser user = appUserService.findByUsername(username);
+    public void withdraw(String username, String accountType, double amount, Principal principal) {
+        AppUser user = appUserService.findByUsername(principal.getName());
 
         if (accountType.equalsIgnoreCase("Checking")) {
             CheckingAccount checkingAccount = user.getCheckingAccount();
